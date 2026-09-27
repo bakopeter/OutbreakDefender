@@ -1,0 +1,197 @@
+﻿<Window x:Class="OutbreakDefender.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OutbreakDefender"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="700" Width="1100">
+
+    <Window.Resources>
+        <!-- 3. pluszfeladat: közös gombstílus -->
+        <Style TargetType="Button">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#162238"/>
+            <Setter Property="BorderBrush" Value="#B9C6D8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="btnKeret"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="btnKeret" Property="Opacity" Value="0.85"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="btnKeret" Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Statisztika-kártya a felső sávhoz -->
+        <Style x:Key="StatKartya" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderBrush" Value="#B9C6D8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- ==================== 1. FEJLÉC ==================== -->
+        <!--Fejléc-->
+        <Border Grid.Row="0" Background="#162238" Padding="20,10">
+            <StackPanel>
+                <TextBlock Text="OUTBREAK DEFENDER" FontSize="28" FontWeight="Bold" Foreground="White"/>
+                <TextBlock Text="Járványvédelmi stratégiai játék" Foreground="#9FB3CC"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ==================== 2. STATISZTIKA- ÉS VEZÉRLŐSÁV ==================== -->
+        <Border Grid.Row="1" Background="#DDE6F0" Padding="8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Kör -->
+                <Border Grid.Column="0" Style="{StaticResource StatKartya}">
+                    <StackPanel>
+                        <TextBlock Text="Kör" FontSize="11" Foreground="#5B7089"/>
+                        <TextBlock x:Name="txtKor" Text="1"
+                                   FontSize="18" FontWeight="Bold" Foreground="#162238"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Akciópont -->
+                <Border Grid.Column="1" Style="{StaticResource StatKartya}">
+                    <StackPanel>
+                        <TextBlock Text="Akciópont" FontSize="11" Foreground="#5B7089"/>
+                        <TextBlock x:Name="txtAkcioPont" Text="10"
+                                   FontSize="18" FontWeight="Bold" Foreground="#162238"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Érintett lakosság -->
+
+                <!-- Fertőzöttek -->
+
+                <!-- Gombok és nehézségi szint -->
+                <StackPanel Grid.Column="5" Orientation="Horizontal">
+                    <Button x:Name="btnKovetkezoKor" Content="▶ Következő kör" Click="BtnKovetkezoKor_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ==================== 3. FŐ TERÜLET: VÁROSOK + AKCIÓK ==================== -->
+        <Grid Grid.Row="2" Margin="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Várostáblázat -->
+            <Border Grid.Column="0" Background="White" CornerRadius="8"
+                    BorderBrush="#B9C6D8" BorderThickness="1" Padding="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="🏙 Városok"
+                               FontSize="18" FontWeight="Bold"
+                               Foreground="#162238" Margin="4,2,0,8"/>
+
+                    <!-- DataGrid: a városok táblázatos megjelenítése -->
+                    <DataGrid x:Name="dgVarosok" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" Padding="10">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Város" Binding="{Binding Nev}"/>
+                            <DataGridTextColumn Header="Lakosság" Binding="{Binding Lakossag, StringFormat={}{0:N0}}"/>
+                            <DataGridTemplateColumn Header="Fertőzöttség">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <ProgressBar Padding="5" Minimum="0" Maximum="100" Height="18" Width="160" Value="{Binding Fertozottseg}"/>
+                                            <TextBlock Padding="5" Text="{Binding Fertozottseg, StringFormat={}{0}%}" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Védelem" Binding="{Binding Vedelem}"/>
+                            <DataGridCheckBoxColumn Header="Karantén" Binding="{Binding Karanten}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+            
+            <!-- Akciópanel -->
+            <Border Grid.Column="1" Background="White" CornerRadius="8"
+                    BorderBrush="#B9C6D8" BorderThickness="1"
+                    Padding="10" Margin="8,0,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="⚕ Akciók"
+                               FontSize="18" FontWeight="Bold"
+                               Foreground="#162238" Margin="4,2,0,8"/>
+
+                    <!-- Kezelés -->
+                    <Border Grid.Row="1" Background="#F1F8E9" CornerRadius="8"
+                            BorderBrush="#A5D6A7" BorderThickness="1"
+                            Padding="10" Margin="0,0,0,6">
+                        <StackPanel>
+                            <TextBlock Text="💉 Kezelés" FontSize="15"
+                                       FontWeight="Bold" Foreground="#2E7D32"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="#44546A"
+                                       Text="Csökkenti a kijelölt város fertőzöttségét 15 százalékponttal. Kutatóvárosban olcsóbb (2 AP)."/>
+                            <TextBlock x:Name="txtKezelesKoltseg" Text="Költség: 3 AP"
+                                       FontSize="12" Foreground="#2E7D32" FontWeight="SemiBold"/>
+                            <Button x:Name="btnKezeles" Content="Kezelés"
+                                    Background="#4CAF50" Foreground="White"
+                                    BorderBrush="#2E7D32" Click="BtnKezeles_Click"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Karantén -->
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>
