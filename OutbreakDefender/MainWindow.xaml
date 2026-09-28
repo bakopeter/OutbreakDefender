@@ -177,7 +177,7 @@
                             BorderBrush="#A5D6A7" BorderThickness="1"
                             Padding="10" Margin="0,0,0,6">
                         <StackPanel>
-                            <TextBlock Text="💉 Kezelés" FontSize="15"
+                            <TextBlock Text="Kezelés" FontSize="15"
                                        FontWeight="Bold" Foreground="#2E7D32"/>
                             <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="#44546A"
                                        Text="Csökkenti a kijelölt város fertőzöttségét 15 százalékponttal. Kutatóvárosban olcsóbb (2 AP)."/>
@@ -190,6 +190,38 @@
                     </Border>
 
                     <!-- Karantén -->
+                    <Border Grid.Row="2" Background="#F1F8E9" CornerRadius="8"
+                            BorderBrush="#A5D6A7" BorderThickness="1"
+                            Padding="10" Margin="0,0,0,6">
+                        <StackPanel>
+                            <TextBlock Text="Karantén" FontSize="15"
+                                       FontWeight="Bold" Foreground="#2E7D32"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="#44546A"
+                                       Text="A város fertőzése lassabban terjed a következő körökben."/>
+                            <TextBlock x:Name="txtKarantenKoltseg" Text="Költség: 5 AP"
+                                       FontSize="12" Foreground="#2E7D32" FontWeight="SemiBold"/>
+                            <Button x:Name="btnKaranten" Content="Karantén"
+                                    Background="#4CAF50" Foreground="White"
+                                    BorderBrush="#2E7D32" Click="BtnKaranten_Click"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <!--Védelem-->
+                    <Border Grid.Row="3" Background="#F1F8E9" CornerRadius="8"
+                            BorderBrush="#A5D6A7" BorderThickness="1"
+                            Padding="10" Margin="0,0,0,6">
+                        <StackPanel>
+                            <TextBlock Text="Védelem fejlesztése" FontSize="15"
+                                       FontWeight="Bold" Foreground="#2E7D32"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="12" Foreground="#44546A"
+                                       Text="Növeli a város védekezőképességét, így csökkentve a fertőzés terjedését."/>
+                            <TextBlock x:Name="txtVedelem" Text="Költség: 4 AP"
+                                       FontSize="12" Foreground="#2E7D32" FontWeight="SemiBold"/>
+                            <Button x:Name="btnVedelem" Content="Védelem"
+                                    Background="#4CAF50" Foreground="White"
+                                    BorderBrush="#2E7D32" Click="BtnVedelem_Click"/>
+                        </StackPanel>
+                    </Border>
                 </Grid>
             </Border>
         </Grid>

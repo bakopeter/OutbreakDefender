@@ -117,6 +117,29 @@ namespace OutbreakDefender
 );          FeluletFrissites();
         }
 
+        private void BtnKaranten_Click(object sender, RoutedEventArgs e)
+        {
+            Varos? kivalasztott = KivalasztottVaros();
+            if (kivalasztott == null) return;
+
+            if (kivalasztott.Karanten)
+            {
+                MessageBox.Show("Ez a város már karantén alatt van.");
+                return;
+            }
+
+            if (akciopont < 5)
+            {
+                MessageBox.Show("Nincs elegendő akciópontod!");
+                return;
+            }
+
+            akciopont -= 5;
+            kivalasztott.Karanten = true;
+            EsemenyNaplo($"{ kivalasztott.Nev} karanténba került.");
+            FeluletFrissites();
+        }
+
         private void EsemenyNaplo(string uzenet)
         {
             // Ezt a 9. lépésben töltjük fel.
