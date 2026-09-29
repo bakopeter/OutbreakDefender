@@ -22,6 +22,8 @@ namespace OutbreakDefender
         /// <summary>A városok gyűjteménye – a DataGrid adatforrása.</summary>
         ObservableCollection<Varos> varosok = new ObservableCollection<Varos>();
 
+        ObservableCollection<string> esemenyNaplo = new ObservableCollection<string>();
+
         /// <summary>Véletlenszám-generátor.</summary>
         Random rnd = new Random();
 
@@ -36,6 +38,7 @@ namespace OutbreakDefender
             InitializeComponent();
             dgVarosok.ItemsSource = varosok; // adatforrás bekötése 
             VarosokLetrehozasa();
+            lbEsemenyek.ItemsSource = esemenyNaplo;
         }
 
         // ========================= 3. feladat: városok létrehozása =========================
@@ -65,6 +68,7 @@ namespace OutbreakDefender
             EsemenyNaplo($"---{ kor}. kör-- - "); 
 
             FertozesTerjedese();
+            VeletlenEsemeny();
 
             // 5. felület frissítése, majd győzelem/vereség ellenőrzése
             FeluletFrissites();
@@ -85,6 +89,56 @@ namespace OutbreakDefender
                 v.Fertozottseg = Math.Min(100, v.Fertozottseg + tenyleges);
 
                 EsemenyNaplo($"{v.Nev}: {elozo}% -> {v.Fertozottseg}%");
+            }
+        }
+
+        private void VeletlenEsemeny()
+        {
+            int esemeny = rnd.Next(0, 4);
+
+            switch (esemeny)
+            {
+                case 0: //Nemzetközi segítség
+                    akciopont += 5;
+                    EsemenyNaplo("Nemzetközi segítség érkezett!\r\n+5 akciópontot kaptál.");
+                    break;
+
+                case 1: //Új fertőzési hullám
+                    Varos fVaros = varosok[rnd.Next(varosok.Count)];
+                    int elozo = fVaros.Fertozottseg;
+                    fVaros.Fertozottseg = Math.Min(100, fVaros.Fertozottseg + 15);
+                    string uzenet = elozo < fVaros.Fertozottseg
+                            ? $"{elozo}%-ról {fVaros.Fertozottseg}%-ra nőtt (+15%)."
+                            : $"továbbra is {elozo}%-os.";
+                    EsemenyNaplo($"Új fertőzési hullám!\r\n{fVaros.Nev} fertőzöttsége {uzenet}");
+                    break;
+
+                case 2: //Sikeres kutatás
+                    EsemenyNaplo("Sikeres kutatás!\r\nMinden város fertőzöttsége csökkent (-5%).");
+
+                    foreach (var varos in varosok)
+                    {
+                        if (varos.Fertozottseg <= 0) continue;
+
+                        elozo = varos.Fertozottseg;
+                        varos.Fertozottseg = Math.Max(0, varos.Fertozottseg - 5);
+
+                        EsemenyNaplo($"{varos.Nev}: {elozo}% -> {varos.Fertozottseg}%");
+                    }
+                    break;
+
+                case 3: //Védelmi rendszer meghibásodása
+                    List<Varos> vVarosok = varosok.Where(v => v.Vedelem > 0).ToList();
+                    if (vVarosok.Count > 0)
+                    {
+                        Varos v = vVarosok[rnd.Next(vVarosok.Count)];
+                        int elozoVedelem = v.Vedelem;
+                        v.Vedelem--;
+
+                        EsemenyNaplo($"Védelmi rendszer meghibásodott!\r\n" +
+                            $"{v.Nev} védelmi szintje {elozoVedelem}-ről {v.Vedelem}-re csökkent.");
+                    }
+                    break;
             }
         }
 
@@ -110,10 +164,11 @@ namespace OutbreakDefender
             }
 
             akciopont -= 3;
+            int elozo = kivalasztott.Fertozottseg;
             kivalasztott.Fertozottseg = Math.Max(0, kivalasztott.Fertozottseg - 15);
 
             EsemenyNaplo($"{ kivalasztott.Nev} kezelést kapott. " 
-                + $"Fertőzöttség:{ kivalasztott.Fertozottseg}% "
+                + $"Fertőzöttség: {elozo}% -> {kivalasztott.Fertozottseg}% (-15%)"
 );          FeluletFrissites();
         }
 
@@ -140,9 +195,40 @@ namespace OutbreakDefender
             FeluletFrissites();
         }
 
+        private void BtnVedelem_Click(object sender, RoutedEventArgs e)
+        {
+            Varos? kivalasztott = KivalasztottVaros();
+            if (kivalasztott == null) return;
+
+            if (kivalasztott.Vedelem >= 3)
+            {
+                MessageBox.Show("A város védelme már maximális.");
+                return;
+            }
+
+            if (akciopont < 4)
+            {
+                MessageBox.Show("Nincs elegendő akciópontod!");
+                return;
+            }
+
+            akciopont -= 4;
+            kivalasztott.Vedelem++;
+            EsemenyNaplo($"{kivalasztott.Nev} védelmi szintje " +
+                $"{kivalasztott.Vedelem}-re nőtt!");
+            FeluletFrissites();
+        }
+
+        private void BtnNaploTorles_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void EsemenyNaplo(string uzenet)
         {
             // Ezt a 9. lépésben töltjük fel.
+            esemenyNaplo.Add(uzenet);
+            lbEsemenyek.ScrollIntoView(lbEsemenyek.Items.Count - 1);
         }
 
         /// <summary>Frissíti a statisztikákat és a kijelölt város adatait.</summary>
