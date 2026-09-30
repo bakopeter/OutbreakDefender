@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:OutbreakDefender"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="1100">
+        Title="MainWindow" Height="810" Width="1200">
 
     <Window.Resources>
         <!-- 3. pluszfeladat: közös gombstílus -->
@@ -61,6 +61,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- ==================== 1. FEJLÉC ==================== -->
@@ -81,7 +82,6 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <!-- Kör -->
@@ -103,12 +103,29 @@
                 </Border>
 
                 <!-- Érintett lakosság -->
+                <Border Grid.Column="2" Style="{StaticResource StatKartya}">
+                    <StackPanel>
+                        <TextBlock Text="Érintett lakosság (összesen)" FontSize="11" Foreground="#5B7089"/>
+                        <TextBlock x:Name="txtErintettLakossag" Text="0"
+                                   FontSize="18" FontWeight="Bold" Foreground="#162238"/>
+                    </StackPanel>
+                </Border>
 
                 <!-- Fertőzöttek -->
+                <Border Grid.Column="3" Style="{StaticResource StatKartya}">
+                    <StackPanel>
+                        <TextBlock Text="Fertőzöttek (összesen)" FontSize="11" Foreground="#5B7089"/>
+                        <TextBlock x:Name="txtFertozottek" Text="0 (0,0%)"
+                                   FontSize="18" FontWeight="Bold" Foreground="#D32F2F"/>
+                    </StackPanel>
+                </Border>
 
                 <!-- Gombok és nehézségi szint -->
-                <StackPanel Grid.Column="5" Orientation="Horizontal">
-                    <Button x:Name="btnKovetkezoKor" Content="▶ Következő kör" Click="BtnKovetkezoKor_Click"/>
+                <StackPanel Grid.Column="4" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="btnKovetkezoKor" Content="▶ Következő kör" 
+                            Click="BtnKovetkezoKor_Click"/>
+                    <Button x:Name="btnUjJatek" Content="↻ Új játék"
+                            Click="BtnUjJatek_Click"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -164,8 +181,8 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0" Text="⚕ Akciók"
@@ -245,7 +262,6 @@
                                         BorderBrush="#2E7D32" Click="BtnVedelem_Click"/>
                             </StackPanel>
                         </Grid>
-                        
                     </Border>
                 </Grid>
             </Border>
@@ -258,7 +274,7 @@
                 <ColumnDefinition Width="0.8*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Eseménynapló ListBox-tal -->
+            <!-- Eseménynapló ListBox-al -->
             <Border Grid.Column="0" Background="#162238" CornerRadius="8" Padding="10">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -287,6 +303,58 @@
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
                 </Grid>
             </Border>
+
+            <!-- Játékinformáció -->
+            <Border Grid.Column="1" Background="#162238" CornerRadius="8"
+                    Padding="12" Margin="8,0,0,0">
+                <StackPanel>
+                    <TextBlock Text="ℹ Játékinformáció" FontSize="15"
+                               FontWeight="Bold" Foreground="#9FB3CC"/>
+
+                    <TextBlock Margin="0,8,0,0" TextWrapping="Wrap" Foreground="#C9D6E5" FontSize="12">
+                        <Run Text="🎯 Cél:" FontWeight="Bold"/>
+                        <LineBreak/>
+                        <Run Text="Állítsd meg a járványt! Győzöl, ha minden város fertőzöttsége 0%."/>
+                    </TextBlock>
+
+                    <TextBlock Margin="0,8,0,0" TextWrapping="Wrap" Foreground="#C9D6E5" FontSize="12">
+                        <Run Text="💀 Vereség:" FontWeight="Bold"/>
+                        <LineBreak/>
+                        <Run Text="Ha minden város fertőzöttsége eléri a 100%-ot."/>
+                    </TextBlock>
+
+                    <TextBlock Margin="0,8,0,0" Foreground="#C9D6E5" FontSize="12" TextWrapping="Wrap">
+                        <Run Text="🏆 Pontszám = 1000 – körök × 20 + akciópont × 5" FontWeight="Bold"/>
+                    </TextBlock>
+
+                    <TextBlock x:Name="txtHelyzet" Margin="0,12,0,0"
+                               Text="Járványhelyzet: –"
+                               FontSize="14" FontWeight="Bold" Foreground="#FBC02D"/>
+                </StackPanel>
+            </Border>
         </Grid>
+
+        <!-- ==================== 5. ÁLLAPOTSÁV ==================== -->
+        <Border Grid.Row="4" Background="#22334E" Padding="14,6">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="Outbreak Defender v1.0" Foreground="#9FB3CC"
+                               FontSize="12" VerticalAlignment="Center"/>
+                    <TextBlock Text="  |  Készítette: Diákprojekt" Foreground="#9FB3CC"
+                               FontSize="12" VerticalAlignment="Center"/>
+                    <TextBlock Text="  |  WPF" Foreground="#9FB3CC"
+                               FontSize="12" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock x:Name="txtNehezseg" Grid.Column="2"
+                           Text="Nehézség: Normál"
+                           Foreground="#9FB3CC" FontSize="12"
+                           HorizontalAlignment="Right"/>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

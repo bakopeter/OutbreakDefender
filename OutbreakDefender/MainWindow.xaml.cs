@@ -39,6 +39,7 @@ namespace OutbreakDefender
             dgVarosok.ItemsSource = varosok; // adatforrás bekötése 
             VarosokLetrehozasa();
             lbEsemenyek.ItemsSource = esemenyNaplo;
+            UjJatek();
         }
 
         // ========================= 3. feladat: városok létrehozása =========================
@@ -72,6 +73,7 @@ namespace OutbreakDefender
 
             // 5. felület frissítése, majd győzelem/vereség ellenőrzése
             FeluletFrissites();
+            JatekVegeEllenorzes();
         }
 
         private void FertozesTerjedese()
@@ -135,7 +137,7 @@ namespace OutbreakDefender
                         int elozoVedelem = v.Vedelem;
                         v.Vedelem--;
 
-                        EsemenyNaplo($"Védelmi rendszer meghibásodott!\r\n" +
+                        EsemenyNaplo($"Védelmi rendszer meghibásodott!\n" +
                             $"{v.Nev} védelmi szintje {elozoVedelem}-ről {v.Vedelem}-re csökkent.");
                     }
                     break;
@@ -170,6 +172,7 @@ namespace OutbreakDefender
             EsemenyNaplo($"{ kivalasztott.Nev} kezelést kapott. " 
                 + $"Fertőzöttség: {elozo}% -> {kivalasztott.Fertozottseg}% (-15%)"
 );          FeluletFrissites();
+            JatekVegeEllenorzes();
         }
 
         private void BtnKaranten_Click(object sender, RoutedEventArgs e)
@@ -219,9 +222,47 @@ namespace OutbreakDefender
             FeluletFrissites();
         }
 
+        private void JatekVegeEllenorzes()
+        {
+            bool vereseg = varosok.All(v => v.Fertozottseg >= 100);
+            bool gyozelem = varosok.All(v => v.Fertozottseg <= 0);
+
+            if (!vereseg && !gyozelem) return;
+
+            jatekVege = true;
+            pontszam = Math.Max(0, 1000 - kor * 20 + akciopont * 5);
+
+            btnKezeles.IsEnabled = false;
+            btnKaranten.IsEnabled = false;
+            btnVedelem.IsEnabled = false;
+            btnKovetkezoKor.IsEnabled = false;
+
+            MessageBox.Show(gyozelem
+                ? $"GYŐZELEM!\nSikerült megfékezni a járványt.\nPontszám: {pontszam}"
+                : $"JÁTÉK VÉGE\nA járvány minden várost elért.\nPontszám: {pontszam}");
+        }
+
+        private void BtnUjJatek_Click( object sender, RoutedEventArgs e )
+        {
+            UjJatek();
+        }
+
+        private void UjJatek()
+        {
+            kor = 1;
+            akciopont = 10;
+            jatekVege = false;
+            esemenyNaplo.Clear();
+            VarosokLetrehozasa();
+            EsemenyNaplo("--- 1. kör ---");
+            foreach (var v in varosok) EsemenyNaplo($"{v.Nev}: {v.Fertozottseg}%");
+            FeluletFrissites();
+            JatekVegeEllenorzes();
+        }
+
         private void BtnNaploTorles_Click(object sender, RoutedEventArgs e)
         {
-
+            esemenyNaplo.Clear();
         }
 
         private void EsemenyNaplo(string uzenet)
@@ -236,6 +277,9 @@ namespace OutbreakDefender
         {
             txtKor.Text = kor.ToString();
             txtAkcioPont.Text = akciopont.ToString();
+            txtErintettLakossag.Text = varosok.Where(v => v.Fertozottseg > 0).Sum(v => v.Lakossag).ToString();
+            txtFertozottek.Text = $"{varosok.Sum(v => v.Lakossag * v.Fertozottseg / 100)} " +
+                $"({varosok.Sum(v => v.Fertozottseg) / Math.Max(1, varosok.Where(v => v.Fertozottseg > 0).Count())}%)";
         }
     }
 }
